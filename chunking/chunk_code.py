@@ -82,15 +82,17 @@ def extract_chunks(tree, source, file_path):
             chunk_id = f"{file_path}:{node.name}:{start_line}"
 
             chunk = {
-                "id": chunk_id,
                 "type": "code",
-                "code_type": type(node).__name__,
-                "name": node.name,
-                "file": file_path,
-                "start_line": start_line,
-                "end_line": end_line,
-                "code": code_chunk,
-                "parent": parent
+                "content": code_chunk,
+                "metadata":{
+                    "id": chunk_id,
+                    "code_type": type(node).__name__,
+                    "name": node.name,
+                    "file": file_path,
+                    "start_line": start_line,
+                    "end_line": end_line,
+                    "parent": parent
+                }
             }
 
             chunks.append(chunk)

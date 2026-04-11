@@ -44,28 +44,28 @@ def chunk_logs_semantic(lines):
 
     return chunks
 
-def extract_metadata(chunk):
-    first_line = chunk.split("\n")[0]
-
-    timestamp_match = re.search(r"\[(.*?)\]", first_line)
-    level_match = re.search(r"\b(INFO|DEBUG|ERROR|WARNING)\b", first_line)
-
-    return {
-        "timestamp": timestamp_match.group(1) if timestamp_match else None,
-        "level": level_match.group(1) if level_match else None,
-        "source": first_line
-    }
-
-def get_metadata(chunks):
-    metadata = []
+def get_formatted_chunks(chunks):
+    formatted_chunks = []
     for i, chunk in enumerate(chunks):
-        meta = extract_metadata(chunk)
-        meta["text"] = chunk
-        meta["chunk_id"] = i
-        meta["type"] = "log"
-        metadata.append(meta)
+        first_line = chunk.split("\n")[0]
+        timestamp_match = re.search(r"\[(.*?)\]", first_line)
+        level_match = re.search(r"\b(INFO|DEBUG|ERROR|WARNING)\b", first_line)
 
-    return metadata
+        meta = {
+            "type": "log",
+            "content": chunk,
+            "metadata":{
+                "timestamp": timestamp_match.group(1) if timestamp_match else None,
+                "level": level_match.group(1) if level_match else None,
+                "source": first_line,
+                "chunk_id": i
+            }
+        }
+
+        formatted_chunks.append(meta)
+
+    return formatted_chunks
+
 
 def chunk_logs(path, size):
     logging.info(f"extracting lines ...")
@@ -79,10 +79,10 @@ def chunk_logs(path, size):
     logging.info(f"took {chunking_end_time - chunking_start_time} to chunk {size} MB file")
 
     logging.info(f"extracting logs metadata ...")
-    metadata_start_time = time.time()
-    metadata = get_metadata(log_chunks)
-    metadata_end_time = time.time()
+    formatted_chunks_start_time = time.time()
+    formatted_chunks = get_formatted_chunks(log_chunks)
+    formatted_chunks_end_time = time.time()
 
-    logging.info(f"took {metadata_end_time - metadata_start_time} to extract logs metadata: {len(metadata)}")
+    logging.info(f"took {formatted_chunks_end_time - formatted_chunks_start_time} to extract formatted_chunks: {len(formatted_chunks)}")
 
-    return metadata
+    return formatted_chunks
