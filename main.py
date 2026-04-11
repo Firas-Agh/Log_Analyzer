@@ -85,7 +85,6 @@ if __name__ == "__main__":
     logging.info(f"took {chunking_end_time - chunking_start_time} to chunk {size_mb} MB file")
 
     logging.info(f"extracting metadata ...")
-    metadata = get_metadata(chunks)
     metadata_start_time = time.time()
     metadata = get_metadata(log_chunks)
     metadata_end_time = time.time()
