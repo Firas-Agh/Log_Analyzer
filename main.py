@@ -3,6 +3,7 @@ import re
 import time
 import logging
 
+#Chunking log file
 LOG_START_PATTERN = re.compile(r"^\[\d{4}-\d{2}-\d{2}T.*Z\]\s\d{4}-\d{2}-\d{2}\s.*\s\[.*\]")
 
 def load_log_file(path):
@@ -78,13 +79,19 @@ if __name__ == "__main__":
 
     logging.info(f"chunking logs ...")
     chunking_start_time=time.time()
-    chunks = chunk_logs_semantic(lines)
+    log_chunks = chunk_logs_semantic(lines)
     chunking_end_time = time.time()
 
     logging.info(f"took {chunking_end_time - chunking_start_time} to chunk {size_mb} MB file")
 
     logging.info(f"extracting metadata ...")
     metadata = get_metadata(chunks)
+    metadata_start_time = time.time()
+    metadata = get_metadata(log_chunks)
+    metadata_end_time = time.time()
+
+    logging.info(f"took {metadata_end_time - metadata_start_time} to extract metadata: {len(metadata)}")
+
 
 
 
